@@ -151,6 +151,32 @@ public:
     }
 
 
+	int getRows(){
+    	return rows;
+		}
+
+	int getCols(){
+    	return cols;
+	}
+
+	char getCell(int row, int col){
+    	return grid[row][col];
+	}
+
+	Position getStart(){
+    	Position p;
+		p.row = startRow;
+    	p.col = startCol;
+    	return p;
+	}
+
+	Position getExit(){
+    	Position p;
+    	p.row = exitRow;
+    	p.col = exitCol;
+    	return p;
+	}
+	
     void initializeMaze()
     {
         // assigning every cell #
