@@ -1,11 +1,8 @@
-
 #ifndef COMPARISON_H
 #define COMPARISON_H
-
 #include "Solver.h"
 
-class Comparison
-{
+class Comparison{
 public:
     static void run(Maze& maze);
 };
