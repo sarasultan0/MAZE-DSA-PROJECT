@@ -8,6 +8,7 @@ struct SolveResult{
 	int exploredcells;
 	int pathlength;
 	Position* path;
+	Position* exploredList; 
 };
 
 class Solver{
