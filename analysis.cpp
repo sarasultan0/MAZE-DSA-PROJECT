@@ -63,7 +63,7 @@ void displaySolution(Maze& maze, const SolveResult& r){
         }
     }
 
-    if (r.path != NULL) //mark final path{
+    if (r.path != NULL) {//mark final path{
         for (int i = 0; i < r.pathlength; i++){
             Position p = r.path[i];
             if (g[p.row][p.col] == '.' || g[p.row][p.col] == '+')
