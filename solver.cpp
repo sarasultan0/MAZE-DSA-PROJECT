@@ -1,12 +1,6 @@
-
 #include "Solver.h"
 
-// ========================================
-// HELPER 1: CHECK VALID POSITION
-// ========================================
-
-bool isValid(Maze& maze, int row, int col)
-{
+bool isValid(Maze& maze, int row, int col){
     if (row < 0 || row >= maze.getRows())
         return false;
 
@@ -19,23 +13,11 @@ bool isValid(Maze& maze, int row, int col)
     return true;
 }
 
-
-// ========================================
-// HELPER 2: COMPARE POSITIONS
-// ========================================
-
-bool samePosition(Position a, Position b)
-{
+bool samePosition(Position a, Position b){
     return a.row == b.row && a.col == b.col;
 }
 
-
-// ========================================
-// HELPER 3: ALLOCATE VISITED GRID
-// ========================================
-
-bool** createVisited(int rows, int cols)
-{
+bool** createVisited(int rows, int cols){
     bool** visited = new bool*[rows];
 
     for (int i = 0; i < rows; i++)
@@ -52,12 +34,7 @@ bool** createVisited(int rows, int cols)
 }
 
 
-// ========================================
-// HELPER 4: ALLOCATE PARENT GRID
-// ========================================
-
-Position** createParent(int rows, int cols)
-{
+Position** createParent(int rows, int cols){
     Position** parent = new Position*[rows];
 
     for (int i = 0; i < rows; i++)
@@ -75,12 +52,7 @@ Position** createParent(int rows, int cols)
 }
 
 
-// ========================================
-// HELPER 5: FREE GRIDS
-// ========================================
-
-void freeGrids(bool** visited, Position** parent, int rows)
-{
+void freeGrids(bool** visited, Position** parent, int rows){
     for (int i = 0; i < rows; i++)
     {
         delete[] visited[i];
@@ -91,10 +63,6 @@ void freeGrids(bool** visited, Position** parent, int rows)
     delete[] parent;
 }
 
-
-// ========================================
-// HELPER 6: RECONSTRUCT PATH
-// ========================================
 
 Position* reconstructPath(
     Position** parent,
@@ -109,8 +77,7 @@ Position* reconstructPath(
 
     // Count path positions by moving backwards
 
-    while (!samePosition(current, start))
-    {
+    while (!samePosition(current, start)){
         Position previous =
             parent[current.row][current.col];
 
@@ -132,12 +99,10 @@ Position* reconstructPath(
 
     // Fill array backwards
 
-    for (int i = count - 1; i >= 0; i--)
-    {
+    for (int i= count - 1; i >= 0; i--){
         path[i] = current;
 
-        if (i > 0)
-        {
+        if (i > 0){
             current = parent[current.row][current.col];
         }
     }
@@ -147,13 +112,7 @@ Position* reconstructPath(
     return path;
 }
 
-
-// ========================================
-// PART 1: DEPTH FIRST SEARCH
-// ========================================
-
-SolveResult Solver::dfs(Maze& maze)
-{
+SolveResult Solver::dfs(Maze& maze){
     int rows = maze.getRows();
     int cols = maze.getCols();
 
@@ -163,9 +122,7 @@ SolveResult Solver::dfs(Maze& maze)
     Position start = maze.getStart();
     Position exit = maze.getExit();
 
-    // Create custom Stack
-
-    Stack s(rows * cols);
+    Stack s(rows * cols);  //custo stack
 
     s.push(start);
 
@@ -178,32 +135,24 @@ SolveResult Solver::dfs(Maze& maze)
     bool found = false;
     int explored = 0;
 
-    // DFS traversal
+    Position* exploredList = new Position[rows * cols]; 
 
-    while (!s.isEmpty())
-    {
+    while (!s.isEmpty()){
         Position current = s.pop();
 
         explored++;
+        exploredList[explored - 1] = current; 
 
-        // Check exit
-
-        if (samePosition(current, exit))
-        {
+        if (samePosition(current, exit)){
             found = true;
             break;
         }
 
-        // Explore neighbors
-
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++){
             int newRow = current.row + dr[i];
             int newCol = current.col + dc[i];
 
-            if (isValid(maze, newRow, newCol) &&
-                !visited[newRow][newCol])
-            {
+            if (isValid(maze, newRow, newCol) &&!visited[newRow][newCol]){
                 Position next;
 
                 next.row = newRow;
@@ -218,20 +167,16 @@ SolveResult Solver::dfs(Maze& maze)
         }
     }
 
-    // Prepare result
-
     SolveResult result;
 
     result.found = found;
     result.exploredcells = explored;
     result.pathlength = 0;
     result.path = NULL;
+    result.exploredList = exploredList; 
 
-    if (found)
-    {
-        result.path = reconstructPath(
-            parent, start, exit,
-            rows, cols, result.pathlength);
+    if (found){
+        result.path = reconstructPath(parent, start, exit,rows, cols, result.pathlength);
     }
 
     freeGrids(visited, parent, rows);
@@ -240,12 +185,7 @@ SolveResult Solver::dfs(Maze& maze)
 }
 
 
-// ========================================
-// PART 2: BREADTH FIRST SEARCH
-// ========================================
-
-SolveResult Solver::bfs(Maze& maze)
-{
+SolveResult Solver::bfs(Maze& maze){
     int rows = maze.getRows();
     int cols = maze.getCols();
 
@@ -254,8 +194,6 @@ SolveResult Solver::bfs(Maze& maze)
 
     Position start = maze.getStart();
     Position exit = maze.getExit();
-
-    // Create custom Queue
 
     Queue q(rows * cols);
 
@@ -270,51 +208,36 @@ SolveResult Solver::bfs(Maze& maze)
     bool found = false;
     int explored = 0;
 
-    // BFS traversal
+    Position* exploredList = new Position[rows * cols]; 
 
-    while (!q.isEmpty())
-    {
+    while (!q.isEmpty()){
         Position current = q.dequeue();
 
         explored++;
+        exploredList[explored - 1] = current; 
 
-        // Check exit
-
-        if (samePosition(current, exit))
-        {
+        if (samePosition(current, exit)){
             found = true;
             break;
         }
 
-        // Explore neighbors
-
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++){
             int newRow = current.row + dr[i];
             int newCol = current.col + dc[i];
 
-            if (isValid(maze, newRow, newCol) &&
-                !visited[newRow][newCol])
-            {
+            if (isValid(maze, newRow, newCol) &&!visited[newRow][newCol]){
                 Position next;
 
                 next.row = newRow;
                 next.col = newCol;
 
-                // Mark visited when enqueued
-
                 visited[newRow][newCol] = true;
 
-                // Store parent
-
                 parent[newRow][newCol] = current;
-
                 q.enqueue(next);
             }
         }
     }
-
-    // Prepare result
 
     SolveResult result;
 
@@ -322,9 +245,9 @@ SolveResult Solver::bfs(Maze& maze)
     result.exploredcells = explored;
     result.pathlength = 0;
     result.path = NULL;
+    result.exploredList = exploredList; 
 
-    if (found)
-    {
+    if (found){
         result.path = reconstructPath(
             parent, start, exit,
             rows, cols, result.pathlength);
